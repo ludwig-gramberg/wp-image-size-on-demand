@@ -11,7 +11,7 @@
  */
 
 /**
- * @param int $attachement_id
+ * @param int $attachment_id
  * @param null $width
  * @param null $height
  * @param string $mode
@@ -24,7 +24,7 @@
  *      png or jpg
  * @return mixed|string
  */
-function get_on_demand_image($attachement_id, $width = null, $height = null, $mode = 'fit', $background_color = null, $quality = .8, $type = 'jpg') {
+function get_on_demand_image($attachment_id, $width = null, $height = null, $mode = 'fit', $background_color = null, $quality = .8, $type = 'jpg') {
 
     $cacheParam = (defined('ON_DEMAND_IMAGE_CACHE_VERSION') ? '?ver='.ON_DEMAND_IMAGE_CACHE_VERSION : '');
 
@@ -34,7 +34,7 @@ function get_on_demand_image($attachement_id, $width = null, $height = null, $mo
     }
 
     $uploadsDir = ABSPATH.'wp-content/uploads';
-    $filePath = get_attached_file($attachement_id, true);
+    $filePath = get_attached_file($attachment_id, true);
 
     if($width || $height) {
 
@@ -59,7 +59,7 @@ function get_on_demand_image($attachement_id, $width = null, $height = null, $mo
 
         $targetFile = preg_replace('/^(.*)\/([^\/]+\.)(png|jpg|jpeg)$/i', '\\2', $filePath);
         $targetFile .= $type == 'png' ? 'png' : 'jpg';
-        $targetFile = $attachement_id.'_'.$width.'x'.$height.'-'.$optionsKey.'-'.$targetFile;
+        $targetFile = $attachment_id.'_'.$width.'x'.$height.'-'.$optionsKey.'-'.$targetFile;
         $targetPath = $resizedDir.'/'.$targetFile;
 
         if(file_exists($targetPath)) {
