@@ -22,8 +22,6 @@
  * @param int $quality
  * @param string $type
  *      png or jpg
- * @param string $ver
- *      optional param to salt image link for cache invalidation
  * @return mixed|string
  */
 function get_on_demand_image($attachement_id, $width = null, $height = null, $mode = 'fit', $background_color = null, $quality = .8, $type = 'jpg') {
@@ -40,20 +38,6 @@ function get_on_demand_image($attachement_id, $width = null, $height = null, $mo
 
     if($width || $height) {
 
-        // get dimension of source image
-        $out = array();
-        $ret = null;
-        exec('identify -format "%wx%h" '.escapeshellarg($filePath), $out, $ret);
-        $source_width = null;
-        $source_height = null;
-        if(preg_match('/^([0-9]+)x([0-9]+)/', $out[0], $m)) {
-            $source_width = (int)$m[1];
-            $source_height = (int)$m[2];
-        }
-
-        syslog(LOG_NOTICE, 'fka_sh:'.$source_height);
-        syslog(LOG_NOTICE, 'fka_sw:'.$source_width);
-
         if(!$width || !$height) {
             $mode = 'fit';
         }
@@ -63,13 +47,12 @@ function get_on_demand_image($attachement_id, $width = null, $height = null, $mo
             mkdir($resizedDir);
         }
 
-        $optionsKey = array(2); // change this if you change the code of the plugin in order to force recreation of images
-        $optionsKey[] = $mode;
+        $optionsKey = array($mode);
 
         if($background_color) {
             $optionsKey[] = $background_color;
         }
-        if($type == 'png') {
+        if($type != 'png') {
             $optionsKey[] = $quality;
         }
         $optionsKey = md5(implode('|',$optionsKey));
@@ -84,6 +67,17 @@ function get_on_demand_image($attachement_id, $width = null, $height = null, $mo
         }
 
         // create file using imagick
+
+        // get dimension of source image
+        $out = array();
+        $ret = null;
+        exec('identify -format "%wx%h" '.escapeshellarg($filePath), $out, $ret);
+        $source_width = null;
+        $source_height = null;
+        if(preg_match('/^([0-9]+)x([0-9]+)/', $out[0], $m)) {
+            $source_width = (int)$m[1];
+            $source_height = (int)$m[2];
+        }
 
         $command = 'convert';
         $command .= ' '.escapeshellarg($filePath);
@@ -145,8 +139,8 @@ function get_on_demand_image($attachement_id, $width = null, $height = null, $mo
     }
 };
 
-add_action('delete_attachment', 'delete_on_demand_images');
-add_action('edit_attachment', 'delete_on_demand_images');
+add_action('delete_attachment', 'delete_on_demand_images', 100 ,1);
+add_action('edit_attachment', 'delete_on_demand_images', 100 ,1);
 
 function delete_on_demand_images($id) {
     $uploadsDir = ABSPATH.'wp-content/uploads/resized';
