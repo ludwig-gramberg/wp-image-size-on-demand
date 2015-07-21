@@ -22,9 +22,11 @@
  * @param int $quality
  * @param string $type
  *      png or jpg
+ * @param string $crop_gravity
+ *      overwrite default gravity when you crop
  * @return mixed|string
  */
-function get_on_demand_image($attachment_id, $width = null, $height = null, $mode = 'fit', $background_color = null, $quality = .8, $type = 'jpg') {
+function get_on_demand_image($attachment_id, $width = null, $height = null, $mode = 'fit', $background_color = null, $quality = .8, $type = 'jpg', $crop_gravity = null) {
 
     $cacheParam = (defined('ON_DEMAND_IMAGE_CACHE_VERSION') ? '?ver='.ON_DEMAND_IMAGE_CACHE_VERSION : '');
 
@@ -103,6 +105,9 @@ function get_on_demand_image($attachment_id, $width = null, $height = null, $mod
             $gravity = 'center';
             if($source_height !== null && $source_height > $source_width) {
                 $gravity = 'north';
+            }
+            if($crop_gravity !== null) {
+                $gravity = $crop_gravity;
             }
             $command .= ' -gravity '.$gravity;
             $command .= ' -resize '.escapeshellarg($width.'x'.$height.'^');
