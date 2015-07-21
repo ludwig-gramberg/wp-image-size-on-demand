@@ -57,6 +57,9 @@ function get_on_demand_image($attachment_id, $width = null, $height = null, $mod
         if($type != 'png') {
             $optionsKey[] = $quality;
         }
+        if($crop_gravity !== null && $mode == 'crop') {
+            $optionsKey[] = $crop_gravity;
+        }
         $optionsKey = md5(implode('|',$optionsKey));
 
         $targetFile = preg_replace('/^(.*)\/([^\/]+\.)(png|jpg|jpeg)$/i', '\\2', $filePath);
