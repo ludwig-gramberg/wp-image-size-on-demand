@@ -11,6 +11,27 @@
  */
 
 /**
+ * @param $attachment_id
+ * @return array (w, h)
+ */
+function get_on_demand_image_dimensions($attachment_id) {
+
+    $w = null;
+    $h = null;
+
+    $filePath = get_attached_file($attachment_id, true);
+    if(is_file($filePath)) {
+        $dim = trim(shell_exec('identify -format "%wx%h" '.escapeshellarg($filePath)));
+        if(preg_match('/^([0-9]+)x([0-9]+)/', $dim, $m)) {
+            $w = (int)$m[1];
+            $h = (int)$m[2];
+        }
+    }
+
+    return array($w, $h);
+}
+
+/**
  * @param int $attachment_id
  * @param null $width
  * @param null $height
@@ -71,18 +92,8 @@ function get_on_demand_image($attachment_id, $width = null, $height = null, $mod
             return '/wp-content/uploads/resized/'.$targetFile.$cacheParam;
         }
 
-        // create file using imagick
-
         // get dimension of source image
-        $out = array();
-        $ret = null;
-        exec('identify -format "%wx%h" '.escapeshellarg($filePath), $out, $ret);
-        $source_width = null;
-        $source_height = null;
-        if(preg_match('/^([0-9]+)x([0-9]+)/', $out[0], $m)) {
-            $source_width = (int)$m[1];
-            $source_height = (int)$m[2];
-        }
+        list($source_width, $source_height) = get_on_demand_image_dimensions($attachment_id);
 
         $command = 'convert';
         $command .= ' '.escapeshellarg($filePath);
