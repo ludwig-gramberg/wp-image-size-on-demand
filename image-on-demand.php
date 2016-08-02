@@ -148,7 +148,7 @@ function get_on_demand_image($attachment_id, $width = null, $height = null, $mod
         exec($command, $out, $ret);
 
         if($ret > 0) {
-            trigger_error('convert returned code '.$ret.': '.implode("\n", $out), E_USER_WARNING);
+            trigger_error('convert returned code '.$ret.': '.implode("\n", $out).' command: '.$command, E_USER_WARNING);
             return '';
         }
 
