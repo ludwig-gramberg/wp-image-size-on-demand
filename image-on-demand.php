@@ -20,7 +20,7 @@ function get_on_demand_image_dimensions($attachment_id) {
     $h = null;
 
     $old_locale = setlocale(LC_ALL, 0);
-    setlocale(LC_ALL, 'en_US.UTF-8');
+    setlocale(LC_ALL, 'C.UTF-8');
 
     $filePath = get_attached_file($attachment_id, true);
     if(is_file($filePath)) {
@@ -101,7 +101,7 @@ function get_on_demand_image($attachment_id, $width = null, $height = null, $mod
         list($source_width, $source_height) = get_on_demand_image_dimensions($attachment_id);
 
         $old_locale = setlocale(LC_ALL, 0);
-        setlocale(LC_ALL, 'en_US.UTF-8');
+        setlocale(LC_ALL, 'C.UTF-8');
 
         $command = 'convert';
         $command .= ' '.escapeshellarg($filePath);
