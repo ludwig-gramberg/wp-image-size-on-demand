@@ -19,6 +19,9 @@ function get_on_demand_image_dimensions($attachment_id) {
     $w = null;
     $h = null;
 
+    $old_locale = setlocale(LC_ALL, 0);
+    setlocale(LC_ALL, 'en_US.UTF-8');
+
     $filePath = get_attached_file($attachment_id, true);
     if(is_file($filePath)) {
         $dim = trim(shell_exec('identify -format "%wx%h" '.escapeshellarg($filePath)));
@@ -27,6 +30,8 @@ function get_on_demand_image_dimensions($attachment_id) {
             $h = (int)$m[2];
         }
     }
+
+    setlocale(LC_ALL, $old_locale);
 
     return array($w, $h);
 }
@@ -95,6 +100,9 @@ function get_on_demand_image($attachment_id, $width = null, $height = null, $mod
         // get dimension of source image
         list($source_width, $source_height) = get_on_demand_image_dimensions($attachment_id);
 
+        $old_locale = setlocale(LC_ALL, 0);
+        setlocale(LC_ALL, 'en_US.UTF-8');
+
         $command = 'convert';
         $command .= ' '.escapeshellarg($filePath);
         $command .= ' -flatten';
@@ -146,6 +154,8 @@ function get_on_demand_image($attachment_id, $width = null, $height = null, $mod
         $out = array();
         $ret = null;
         exec($command, $out, $ret);
+
+        setlocale(LC_ALL, $old_locale);
 
         if($ret > 0) {
             trigger_error('convert returned code '.$ret.': '.implode("\n", $out).' command: '.$command, E_USER_WARNING);
