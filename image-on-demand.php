@@ -63,6 +63,10 @@ function get_on_demand_image($attachment_id, $width = null, $height = null, $mod
 
     $uploadsDir = ABSPATH.'wp-content/uploads';
     $filePath = get_attached_file($attachment_id, true);
+    
+    if(!file_exists($filePath)) {
+        return '';
+    }
 
     if($width || $height) {
 
